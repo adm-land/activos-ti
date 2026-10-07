@@ -4,6 +4,10 @@ Sistema web para llevar el control de equipos tecnológicos dentro de una empres
 
 La idea no fue hacer solamente un inventario de productos, sino trabajar con el ciclo de vida de los equipos: dónde están, quién los tiene, cuándo vence su garantía, cuándo necesitan mantenimiento y qué movimientos han tenido.
 
+## Demo en vivo
+
+[activos-ti-alan.onrender.com](https://activos-ti-alan.onrender.com/)
+
 ## Funciones principales
 
 - Inicio de sesión con roles de administrador, técnico y consulta.
