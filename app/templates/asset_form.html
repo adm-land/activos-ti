@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar' if asset else 'Nuevo activo' }} | Activos TI{% endblock %}
+{% block content %}
+<div class="form-card wide">
+  <p class="eyebrow">{{ 'ACTUALIZACIÓN' if asset else 'NUEVO REGISTRO' }}</p><h1>{{ 'Editar activo' if asset else 'Registrar activo' }}</h1>
+  <form method="post" class="form form-grid">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% if not asset %}<label>Etiqueta de activo<input name="asset_tag" placeholder="TI-LAP-003" required></label>{% endif %}
+    <label>Tipo<select name="asset_type" required>{% for t in asset_types %}<option value="{{ t }}" {{ 'selected' if asset and asset.asset_type==t }}>{{ t }}</option>{% endfor %}</select></label>
+    <label>Marca<input name="brand" value="{{ asset.brand if asset else '' }}" required></label>
+    <label>Modelo<input name="model" value="{{ asset.model if asset else '' }}" required></label>
+    {% if not asset %}<label>Número de serie<input name="serial_number" required></label>{% endif %}
+    <label>Estado<select name="status">{% for s in statuses %}<option value="{{ s }}" {{ 'selected' if asset and asset.status==s }}>{{ s }}</option>{% endfor %}</select></label>
+    <label>Ubicación<input name="location" value="{{ asset.location if asset else 'Almacén TI' }}" required></label>
+    <label>Fecha de compra<input type="date" name="purchase_date" value="{{ asset.purchase_date.isoformat() if asset and asset.purchase_date else '' }}"></label>
+    <label>Fin de garantía<input type="date" name="warranty_end" value="{{ asset.warranty_end.isoformat() if asset and asset.warranty_end else '' }}"></label>
+    <label>Próximo mantenimiento<input type="date" name="next_maintenance" value="{{ asset.next_maintenance.isoformat() if asset and asset.next_maintenance else '' }}"></label>
+    <label class="full">Notas<textarea name="notes" rows="4" placeholder="Información adicional del equipo...">{{ asset.notes if asset and asset.notes else '' }}</textarea></label>
+    <div class="full"><button class="btn">{{ 'Guardar cambios' if asset else 'Registrar activo' }}</button></div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}{{ asset.asset_tag }} | Activos TI{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><p class="eyebrow">{{ asset.asset_tag }}</p><h1>{{ asset.brand }} {{ asset.model }}</h1><p>{{ asset.asset_type }} · Serie {{ asset.serial_number }}</p></div>
+  <div class="actions">{% if current_user.can_manage %}<a class="btn secondary" href="{{ url_for('main.edit_asset', asset_id=asset.id) }}">Editar</a>{% endif %}<span class="status {{ asset.status|lower|replace('á','a')|replace(' ','-') }} big">{{ asset.status }}</span></div>
+</div>
+<div class="detail-grid">
+  <section class="panel pad">
+    <h2>Información del activo</h2>
+    <div class="meta-grid">
+      <div><span>Ubicación</span><b>{{ asset.location }}</b></div>
+      <div><span>Responsable</span><b>{{ asset.assigned_to or 'Sin asignar' }}</b></div>
+      <div><span>Garantía</span><b>{{ asset.warranty_end.strftime('%d/%m/%Y') if asset.warranty_end else 'Sin dato' }}</b><small class="warranty {{ asset.warranty_state|lower|replace(' ','-') }}">{{ asset.warranty_state }}</small></div>
+      <div><span>Mantenimiento</span><b>{{ asset.next_maintenance.strftime('%d/%m/%Y') if asset.next_maintenance else 'Sin fecha' }}</b><small>{{ asset.maintenance_state }}</small></div>
+      <div><span>Compra</span><b>{{ asset.purchase_date.strftime('%d/%m/%Y') if asset.purchase_date else 'Sin dato' }}</b></div>
+      <div><span>Última actualización</span><b>{{ asset.updated_at.strftime('%d/%m/%Y %H:%M') }}</b></div>
+    </div>
+    {% if asset.notes %}<div class="notes"><span>Notas</span><p>{{ asset.notes }}</p></div>{% endif %}
+  </section>
+  {% if current_user.can_manage %}
+  <aside class="panel pad">
+    <h2>Asignación</h2>
+    {% if asset.assigned_to %}
+      <div class="current-assignment"><span>Actualmente asignado a</span><b>{{ asset.assigned_to }}</b><small>{{ asset.assigned_email or '' }}</small></div>
+      <form method="post" action="{{ url_for('main.return_asset', asset_id=asset.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn secondary small">Registrar devolución</button></form>
+    {% else %}
+      <form method="post" action="{{ url_for('main.assign_asset', asset_id=asset.id) }}" class="form compact">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Responsable<input name="employee_name" required></label>
+        <label>Correo<input type="email" name="employee_email"></label>
+        <label>Área<input name="department" placeholder="Finanzas, Operaciones..."></label>
+        <button class="btn small">Asignar equipo</button>
+      </form>
+    {% endif %}
+  </aside>
+  {% endif %}
+</div>
+<div class="grid-two">
+  <section class="panel pad">
+    <div class="panel-title"><div><p class="eyebrow">MANTENIMIENTO</p><h2>Historial técnico</h2></div></div>
+    {% for r in asset.maintenance_records %}
+      <div class="record"><div><b>{{ r.maintenance_type }}</b><span>{{ r.performed_at.strftime('%d/%m/%Y') }}</span></div><p>{{ r.description }}</p><small>{{ r.technician }} · ${{ '%.2f'|format(r.cost) }}</small></div>
+    {% else %}<p class="muted">Sin mantenimientos registrados.</p>{% endfor %}
+    {% if current_user.can_manage %}
+    <form method="post" action="{{ url_for('main.add_maintenance', asset_id=asset.id) }}" class="form compact separated">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Tipo<select name="maintenance_type"><option>Preventivo</option><option>Correctivo</option><option>Actualización</option></select></label>
+      <label>Descripción<textarea name="description" rows="3" required></textarea></label>
+      <label>Técnico<input name="technician" required></label>
+      <label>Costo<input type="number" step="0.01" min="0" name="cost" value="0"></label>
+      <label>Próximo mantenimiento<input type="date" name="next_maintenance"></label>
+      <button class="btn small">Registrar mantenimiento</button>
+    </form>
+    {% endif %}
+  </section>
+  <section class="panel pad">
+    <div class="panel-title"><div><p class="eyebrow">TRAZABILIDAD</p><h2>Historial de movimientos</h2></div></div>
+    <div class="timeline">
+      {% for event in asset.events %}
+      <div class="timeline-item"><i></i><div><b>{{ event.action }}</b><p>{{ event.detail }}</p><span>{{ event.actor.name }} · {{ event.created_at.strftime('%d/%m/%Y %H:%M') }}</span></div></div>
+      {% else %}<p class="muted">Sin movimientos registrados.</p>{% endfor %}
+    </div>
+  </section>
+</div>
+<section class="panel pad assignment-history">
+  <div class="panel-title"><div><p class="eyebrow">RESPONSABLES</p><h2>Historial de asignaciones</h2></div></div>
+  <table><thead><tr><th>Persona / área</th><th>Departamento</th><th>Asignado</th><th>Devuelto</th></tr></thead><tbody>
+  {% for a in asset.assignments %}<tr><td>{{ a.employee_name }}<br><small>{{ a.employee_email or '' }}</small></td><td>{{ a.department or '-' }}</td><td>{{ a.assigned_at.strftime('%d/%m/%Y %H:%M') }}</td><td>{{ a.returned_at.strftime('%d/%m/%Y %H:%M') if a.returned_at else 'Activo' }}</td></tr>{% else %}<tr><td colspan="4">Sin asignaciones.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endblock %}

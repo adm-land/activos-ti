@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Ingresar | Activos TI{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <p class="eyebrow">ACCESO</p><h1>Iniciar sesión</h1>
+  <form method="post" class="form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Correo<input type="email" name="email" required></label>
+    <label>Contraseña<input type="password" name="password" required></label>
+    <button class="btn">Entrar</button>
+  </form>
+  <div class="demo-box"><b>Administrador de demo</b><br>admin@activos.local · Admin123!</div>
+</div>
+{% endblock %}

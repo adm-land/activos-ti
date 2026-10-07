@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}Usuarios | Activos TI{% endblock %}
+{% block content %}
+<div class="page-head"><div><p class="eyebrow">ADMINISTRACIÓN</p><h1>Usuarios</h1></div></div>
+<section class="panel"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Alta</th></tr></thead><tbody>{% for u in users %}<tr><td>{{ u.name }}</td><td>{{ u.email }}</td><td>{{ u.role }}</td><td>{{ u.created_at.strftime('%d/%m/%Y') }}</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

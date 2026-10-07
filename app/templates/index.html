@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">GESTIÓN DE ACTIVOS TECNOLÓGICOS</p>
+    <h1>Control de inventario TI con seguimiento real del ciclo de vida.</h1>
+    <p>Registro de equipos, responsables, ubicaciones, garantías, mantenimientos y trazabilidad de movimientos desde una sola aplicación.</p>
+    <a class="btn" href="{{ url_for('main.login') }}">Entrar a la demo</a>
+  </div>
+  <div class="hero-card">
+    <div class="flow"><b>01</b><span>Registrar y clasificar activos</span></div>
+    <div class="flow"><b>02</b><span>Asignar equipos a responsables</span></div>
+    <div class="flow"><b>03</b><span>Programar mantenimientos</span></div>
+    <div class="flow"><b>04</b><span>Detectar garantías por vencer</span></div>
+    <div class="flow"><b>05</b><span>Consultar historial y reportes</span></div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Activos | Activos TI{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><p class="eyebrow">INVENTARIO</p><h1>Activos TI</h1></div>
+  <div class="actions"><a class="btn secondary" href="{{ url_for('main.export_assets', q=request.args.get('q',''), status=request.args.get('status',''), type=request.args.get('type',''), location=request.args.get('location','')) }}">Exportar CSV</a>{% if current_user.can_manage %}<a class="btn" href="{{ url_for('main.new_asset') }}">+ Nuevo activo</a>{% endif %}</div>
+</div>
+<form class="filters" method="get">
+  <input name="q" placeholder="Buscar etiqueta, marca, serie o responsable" value="{{ request.args.get('q','') }}">
+  <select name="type"><option value="">Todos los tipos</option>{% for t in asset_types %}<option value="{{ t }}" {{ 'selected' if request.args.get('type')==t }}>{{ t }}</option>{% endfor %}</select>
+  <select name="status"><option value="">Todos los estados</option>{% for s in statuses %}<option value="{{ s }}" {{ 'selected' if request.args.get('status')==s }}>{{ s }}</option>{% endfor %}</select>
+  <input name="location" placeholder="Ubicación" value="{{ request.args.get('location','') }}">
+  <button class="btn small">Filtrar</button>
+</form>
+<section class="panel">
+<table>
+<thead><tr><th>Etiqueta</th><th>Equipo</th><th>Serie</th><th>Estado</th><th>Ubicación</th><th>Responsable</th><th>Garantía</th></tr></thead>
+<tbody>
+{% for a in assets %}
+<tr>
+  <td><a href="{{ url_for('main.asset_detail', asset_id=a.id) }}">{{ a.asset_tag }}</a></td>
+  <td>{{ a.asset_type }} · {{ a.brand }} {{ a.model }}</td>
+  <td>{{ a.serial_number }}</td>
+  <td><span class="status {{ a.status|lower|replace('á','a')|replace(' ','-') }}">{{ a.status }}</span></td>
+  <td>{{ a.location }}</td>
+  <td>{{ a.assigned_to or 'Sin asignar' }}</td>
+  <td><span class="warranty {{ a.warranty_state|lower|replace(' ','-') }}">{{ a.warranty_state }}</span></td>
+</tr>
+{% else %}<tr><td colspan="7">No se encontraron activos.</td></tr>{% endfor %}
+</tbody>
+</table>
+</section>
+{% endblock %}

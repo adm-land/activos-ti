@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | Activos TI{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><p class="eyebrow">RESUMEN</p><h1>Inventario tecnológico</h1><p>Estado actual de los equipos, alertas y actividad reciente.</p></div>
+  {% if current_user.can_manage %}<a class="btn" href="{{ url_for('main.new_asset') }}">Registrar activo</a>{% endif %}
+</div>
+<div class="stats">
+  <div class="stat"><span>Total</span><strong>{{ metrics.total }}</strong></div>
+  <div class="stat"><span>Disponibles</span><strong>{{ metrics.available }}</strong></div>
+  <div class="stat"><span>Asignados</span><strong>{{ metrics.assigned }}</strong></div>
+  <div class="stat"><span>Mantenimiento</span><strong>{{ metrics.maintenance }}</strong></div>
+  <div class="stat"><span>Alertas</span><strong>{{ metrics.warranty_alerts + metrics.maintenance_alerts }}</strong></div>
+</div>
+<div class="grid-two">
+  <section class="panel pad">
+    <div class="panel-title"><div><p class="eyebrow">INVENTARIO</p><h2>Activos por tipo</h2></div></div>
+    <div class="bar-chart">
+      {% for item in categories %}
+      <div class="bar-row"><span>{{ item.name }}</span><div class="bar-track"><i style="width:{{ item.percent }}%"></i></div><b>{{ item.count }}</b></div>
+      {% else %}<p class="muted">Aún no hay activos.</p>{% endfor %}
+    </div>
+  </section>
+  <section class="panel pad">
+    <div class="panel-title"><div><p class="eyebrow">ATENCIÓN</p><h2>Alertas próximas</h2></div></div>
+    <div class="alert-list">
+      {% for asset in alerts %}
+      <a href="{{ url_for('main.asset_detail', asset_id=asset.id) }}">
+        <div><b>{{ asset.asset_tag }} · {{ asset.brand }} {{ asset.model }}</b><span>{{ asset.warranty_state }} · Mantenimiento: {{ asset.maintenance_state }}</span></div><strong>Ver</strong>
+      </a>
+      {% else %}<p class="muted">No hay alertas pendientes.</p>{% endfor %}
+    </div>
+  </section>
+</div>
+<section class="panel pad activity-panel">
+  <div class="panel-title"><div><p class="eyebrow">TRAZABILIDAD</p><h2>Actividad reciente</h2></div></div>
+  <div class="timeline">
+    {% for event in recent_events %}
+    <div class="timeline-item"><i></i><div><b>{{ event.action }}</b><p>{{ event.detail }}</p><span>{{ event.actor.name }} · {{ event.created_at.strftime('%d/%m/%Y %H:%M') }}</span></div></div>
+    {% else %}<p class="muted">Sin movimientos registrados.</p>{% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Activos TI{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="{{ url_for('main.index') }}">Activos<span>TI</span></a>
+  {% if current_user.is_authenticated %}
+  <nav>
+    <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('main.assets') }}">Activos</a>
+    {% if current_user.role == 'admin' %}<a href="{{ url_for('main.users') }}">Usuarios</a>{% endif %}
+    {% if current_user.can_manage %}<a class="btn small" href="{{ url_for('main.new_asset') }}">+ Nuevo activo</a>{% endif %}
+    <a href="{{ url_for('main.logout') }}">Salir</a>
+  </nav>
+  {% endif %}
+</header>
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}<div class="alert {{ category }}">{{ message }}</div>{% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<footer>Proyecto de portafolio · Inventario y control de activos tecnológicos</footer>
+</body>
+</html>
